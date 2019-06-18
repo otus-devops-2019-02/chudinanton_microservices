@@ -1,5 +1,6 @@
 FROM ruby:2.2
-RUN apt-get update -qq && apt-get install -y build-essential
+RUN sed -i '/deb http:\/\/deb.debian.org\/debian jessie-updates main/d' /etc/apt/sources.list \ 
+    && apt-get update -qq && apt-get install -y build-essential
 
 ENV APP_HOME /app
 RUN mkdir $APP_HOME
