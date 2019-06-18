@@ -3,8 +3,24 @@ chudinanton microservices repository
 ## ДЗ№14
 ## В процессе сделано:
 - Скачан и распакован архив. Каталог переименован в src.
+- Скачаны Dockerfil'ы.
+- Выполнены:
+<pre>
+docker pull mongo:latest
+docker build -t chudinanton/post:1.0 ./post-py
+docker build -t chudinanton/comment:1.0 ./comment
+docker build -t chudinanton/ui:1.0 ./ui
+</pre>
 
+В первом случае добавлены:
+<pre>
+apk update && apk add --no-cache musl-dev gcc && \
+pip install --upgrade pip && \
+</pre>
+Во втором и третьем:
+<pre>
 
+</pre>
 ## ДЗ№13
 ## В процессе сделано:
 - Связал утилиту управления gcloud с проектом в облаке.

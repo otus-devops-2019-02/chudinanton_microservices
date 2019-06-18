@@ -1,6 +1,6 @@
 FROM ruby:2.2
 RUN sed -i '/deb http:\/\/deb.debian.org\/debian jessie-updates main/d' /etc/apt/sources.list \ 
-    && docker build -t <your-dockerhub-login>/ui:1.0 ./uiapt-get update -qq && apt-get install -y build-essential
+    && apt-get update -qq && apt-get install -y build-essential
 
 ENV APP_HOME /app
 RUN mkdir $APP_HOME
