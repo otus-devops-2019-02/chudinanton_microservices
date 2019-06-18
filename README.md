@@ -27,9 +27,14 @@ docker inspect id контейенера - просмотреть подробн
 - Создал докер образ:
 <pre>
 docker build -t reddit:latest .
+Точка в конце обязательна, она указывает на путь до
+Docker-контекста
+Флаг -t задает тег для собранного образа
 </pre>
-
-
+- Запустил созданный контейнер
+<pre>
+docker run --name reddit -d --network=host reddit:latest 
+</pre>
 
 ## ДЗ№12
 ## В процессе сделано:
