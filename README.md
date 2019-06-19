@@ -1,5 +1,51 @@
 # chudinanton_microservices
 chudinanton microservices repository
+## ДЗ№14
+## В процессе сделано:
+- Скачан и распакован архив. Каталог переименован в src.
+- Скачаны Dockerfil'ы.
+- Выполнены:
+<pre>
+docker pull mongo:latest
+docker build -t chudinanton/post:1.0 ./post-py
+docker build -t chudinanton/comment:1.0 ./comment
+docker build -t chudinanton/ui:1.0 ./ui
+</pre>
+
+В первом случае добавлены:
+<pre>
+apk update && apk add --no-cache musl-dev gcc && \
+pip install --upgrade pip && \
+</pre>
+Во втором и третьем:
+<pre>
+sed -i '/deb http:\/\/deb.debian.org\/debian jessie-updates main/d' /etc/apt/sources.list \ 
+&& 
+</pre>
+
+- Создал спец сеть и запустил контейнеры:
+<pre>
+docker network create reddit
+docker run -d --network=reddit --network-alias=post_db --network-alias=comment_db mongo:latest
+docker run -d --network=reddit --network-alias=post chudinanton/post:1.0
+docker run -d --network=reddit --network-alias=comment chudinanton/comment:1.0
+docker run -d --network=reddit -p 9292:9292 chudinanton/ui:1.0
+</pre>
+ui взлетел на с первого раза т.к. порт был занят. Остановил старый конейнер и запустил еще раз новый.
+- Проверил работоспособность (создал ссылку).
+
+<pre>
+Для инфо:
+Что мы сделали?
+Создали bridge-сеть для контейнеров, так как сетевые алиасы не
+работают в сети по умолчанию (о сетях в Docker мы поговорим
+на следующем занятии)
+Запустили наши контейнеры в этой сети
+Добавили сетевые алиасы контейнерам
+Сетевые алиасы могут быть использованы для сетевых
+соединений, как доменные имена
+</pre>
+
 ## ДЗ№13
 ## В процессе сделано:
 - Связал утилиту управления gcloud с проектом в облаке.
