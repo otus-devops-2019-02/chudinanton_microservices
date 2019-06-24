@@ -1,5 +1,171 @@
 # chudinanton_microservices
 chudinanton microservices repository
+## ДЗ№15
+## В процессе сделано:
+- Выполнил:  docker run -ti --rm --network none joffotron/docker-net-tools -c ifconfig
+<pre>
+lo        Link encap:Local Loopback  
+          inet addr:127.0.0.1  Mask:255.0.0.0
+          UP LOOPBACK RUNNING  MTU:65536  Metric:1
+          RX packets:0 errors:0 dropped:0 overruns:0 frame:0
+          TX packets:0 errors:0 dropped:0 overruns:0 carrier:0
+          collisions:0 txqueuelen:1000 
+          RX bytes:0 (0.0 B)  TX bytes:0 (0.0 B)
+</pre>
+- Выполнил: docker-machine ssh docker-host ifconfig
+<pre>
+docker0   Link encap:Ethernet  HWaddr 02:42:bf:be:5d:1e  
+          inet addr:172.17.0.1  Bcast:172.17.255.255  Mask:255.255.0.0
+          UP BROADCAST MULTICAST  MTU:1500  Metric:1
+          RX packets:0 errors:0 dropped:0 overruns:0 frame:0
+          TX packets:0 errors:0 dropped:0 overruns:0 carrier:0
+          collisions:0 txqueuelen:0 
+          RX bytes:0 (0.0 B)  TX bytes:0 (0.0 B)
+
+ens4      Link encap:Ethernet  HWaddr 42:01:0a:84:00:03  
+          inet addr:10.132.0.3  Bcast:10.132.0.3  Mask:255.255.255.255
+          inet6 addr: fe80::4001:aff:fe84:3/64 Scope:Link
+          UP BROADCAST RUNNING MULTICAST  MTU:1460  Metric:1
+          RX packets:4157 errors:0 dropped:0 overruns:0 frame:0
+          TX packets:3283 errors:0 dropped:0 overruns:0 carrier:0
+          collisions:0 txqueuelen:1000 
+          RX bytes:72983681 (72.9 MB)  TX bytes:358736 (358.7 KB)
+
+lo        Link encap:Local Loopback  
+          inet addr:127.0.0.1  Mask:255.0.0.0
+          inet6 addr: ::1/128 Scope:Host
+          UP LOOPBACK RUNNING  MTU:65536  Metric:1
+          RX packets:0 errors:0 dropped:0 overruns:0 frame:0
+          TX packets:0 errors:0 dropped:0 overruns:0 carrier:0
+          collisions:0 txqueuelen:1000 
+          RX bytes:0 (0.0 B)  TX bytes:0 (0.0 B)
+</pre>
+- Выполнил docker run --network host -d nginx
+
+Запускается только 1 контейнер ввиду того что порт занят.
+
+<pre>
+Остановить все контейнеры:
+docker kill $(docker ps -q)
+</pre>
+
+Для инфо:
+<pre>
+На docker-host машине выполните команду:
+> sudo ln -s /var/run/docker/netns /var/run/netns
+Теперь вы можете просматривать существующие в данный
+момент net-namespaces с помощью команды:
+> sudo ip netns
+Задание:
+Повторите запуски контейнеров с использованием драйверов
+none и host и посмотрите, как меняется список namespace-ов.
+Примечание: ip netns exec <namespace> <command> - позволит выполнять
+команды в выбранном namespace
+</pre>
+
+- Выполнил запуск контейнеров из ранее созданных образов загруженных на докерхаб.
+<pre>
+#Сначала создали сеть.
+docker network create reddit --driver bridge 
+#Далее все как обычно
+docker run -d --network=reddit mongo:latest
+docker run -d --network=reddit chudinanton/post:1.0
+docker run -d --network=reddit chudinanton/comment:1.0
+docker run -d --network=reddit -p 9292:9292 chudinanton/ui:1.0 
+</pre>
+
+Проблема:
+<pre>
+На самом деле, наши сервисы ссылаются друг на друга по dnsименам, прописанным в ENV-переменных (см Dockerfile). В текущей
+инсталляции встроенный DNS docker не знает ничего об этих
+именах.
+Решением проблемы будет присвоение контейнерам имен или
+сетевых алиасов при старте:
+--name <name> (можно задать только 1 имя)
+--network-alias <alias-name> (можно задать множество алиасов)
+</pre>
+- Делаем
+<pre>
+docker run -d --network=reddit --network-alias=post_db --network-alias=comment_db mongo:latest
+docker run -d --network=reddit --network-alias=post chudinanton/post:1.0
+docker run -d --network=reddit --network-alias=comment chudinanton/comment:1.0
+docker run -d --network=reddit -p 9292:9292 chudinanton/ui:1.0
+Проверяем:
+http://35.195.15.180:9292/
+После успешного теста прибиваем контейнеры:
+docker kill $(docker ps -q)
+</pre>
+- Тестирование двух bridge сетей.
+Инфо:
+<pre>
+Давайте запустим наш проект в 2-х bridge сетях. Так , чтобы сервис ui
+не имел доступа к базе данных в соответствии со схемой ниже. Commenrt и post контейнеры находятся в двух сетях сразу.
+</pre>
+- Создаем докер сети:
+<pre>
+docker network create back_net --subnet=10.0.2.0/24
+docker network create front_net --subnet=10.0.1.0/24
+</pre>
+- Запускаем контейнеры:
+<pre>
+docker run -d --network=front_net -p 9292:9292 --name ui chudinanton/ui:1.0
+docker run -d --network=back_net --name comment chudinanton/comment:1.0
+docker run -d --network=back_net --name post chudinanton/post:1.0
+docker run -d --network=back_net --name mongo_db --network-alias=post_db --network-alias=comment_db mongo:latest 
+</pre>
+При проверке сервиса появляется ошибка ввиду:
+<pre>
+Docker при инициализации контейнера может подключить к нему только 1
+сеть.
+При этом контейнеры из соседних сетей не будут доступны как в DNS, так
+и для взаимодействия по сети.
+Поэтому нужно поместить контейнеры post и comment в обе сети.
+Дополнительные сети подключаются командой:
+docker network connect "network" "container"
+</pre>
+- Подключим контейнеры ко второй сети
+<pre>
+docker network connect front_net post
+docker network connect front_net comment 
+Проверяем:
+http://35.195.15.180:9292/
+все ок
+</pre>
+- Просмотр бриджей на докер ноде
+<pre>
+Входим на докер машину:
+docker-machine ssh docker-host
+Ставим нужную утилиту:
+sudo apt-get update && sudo apt-get install bridge-utils
+Смотрим сети:
+docker network ls
+Смотрим бриджи:
+ifconfig | grep br
+Выберите любой из bridge-интерфейсов и выполните команду. Ниже
+пример вывода:
+brctl show <interface>
+Отображаемые veth-интерфейсы - это те части виртуальных пар
+интерфейсов (2 на схеме), которые лежат в сетевом пространстве хоста и
+также отображаются в ifconfig. Вторые их части лежат внутри контейнеров
+</pre>
+- docker-compose
+<pre>
+Остановим контейнеры, запущенные на предыдущих шагах
+docker kill $(docker ps -q)
+Выполнил:
+export USERNAME=chudinanton
+docker-compose up -d
+docker-compose ps
+Проверил работу сервиса, все ок.
+</pre>
+- Изменен docker-compose под кейс с множеством сетей, сетевых алиасов (стр 18). 
+- Параметризован порт публикации сервиса ui и версии сервисов
+-  Параметризованные параметры записаны в отдельный файл c расширением .env он внесен в игнор и создан example.
+- Задано базовое имя проекта. Двумя способами:
+1. Через переменную в env файле - COMPOSE_PROJECT_NAME=project_name
+2. Через командную строку с ключем -p: docker-compose -p project_name up -d
+
+
 ## ДЗ№14
 ## В процессе сделано:
 - Скачан и распакован архив. Каталог переименован в src.
