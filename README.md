@@ -1,5 +1,10 @@
 # chudinanton_microservices
 chudinanton microservices repository
+## ДЗ№16
+## В процессе сделано:
+- Gitlab поднят через terraform. Сделано два модуля, установка выполняется через провиженеры.
+- 
+
 ## ДЗ№15
 ## В процессе сделано:
 - Выполнил:  docker run -ti --rm --network none joffotron/docker-net-tools -c ifconfig
