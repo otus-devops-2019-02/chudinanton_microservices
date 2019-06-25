@@ -20,11 +20,11 @@ build_job:
     - echo 'Building'
 
 test_unit_job:
- stage: test
- services:
- - mongo:latest
- script:
- - ruby simpletest.rb 
+  stage: test
+  services:
+     - mongo:latest
+  script:
+     - ruby simpletest.rb 
 
 test_integration_job:
   stage: test
@@ -32,28 +32,31 @@ test_integration_job:
     - echo 'Testing 2'
 
 deploy_dev_job:
- stage: review
- script:
-   - echo 'Deploy'
- environment:
-   name: dev
-   url: http://dev.example.com
+   stage: review
+   script:
+     - echo 'Deploy'
+   environment:
+     name: dev
+     url: http://dev.example.com
 
 staging:
- stage: stage
- when: manual
- script:
+   stage: stage
+   when: manual
+   only:
+     - /^\d+\.\d+\.\d+/ 
+   script:
    - echo 'Deploy'
- environment:
-   name: stage
-   url: https://beta.example.com
+   environment:
+     name: stage
+     url: https://beta.example.com
 
 production:
- stage: production
- when: manual
- script:
-   - echo 'Deploy'
- environment:
-   name: production
-   url: https://example.com
-
+   stage: production
+   when: manual
+   only:
+     - /^\d+\.\d+\.\d+/ 
+   script:
+     - echo 'Deploy'
+   environment:
+     name: production
+     url: https://example.com
