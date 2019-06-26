@@ -1,7 +1,0 @@
-REPOSITORY                    TAG                 IMAGE ID            CREATED             SIZE
-chudinanton/ubuntu-tmp-file   latest              ac5b53036ddd        54 seconds ago      119MB
-ubuntu                        16.04               a3551444fc85        2 weeks ago         119MB
-hello-world                   latest              fce289e99eb9        4 months ago        1.84kB
-
-Задание со * 
-Отличие контейнера от образа заключается в том что в контейнере есть Read-Write Layer т.е. доп слой для чтения и записи.
