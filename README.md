@@ -1,5 +1,9 @@
 # chudinanton_microservices
 chudinanton microservices repository
+## ДЗ№18
+## В процессе сделано:
+- 
+
 ## ДЗ№17
 ## В процессе сделано:
 - Основное задание по развертыванию prometheus и мониторингу сервисов.
