@@ -1,5 +1,12 @@
 # chudinanton_microservices
 chudinanton microservices repository
+## ДЗ№18
+## В процессе сделано:
+- Основное задание.
+
+Ссылка на докер хаб:
+https://hub.docker.com/u/chudinanton
+
 ## ДЗ№17
 ## В процессе сделано:
 - Основное задание по развертыванию prometheus и мониторингу сервисов.
