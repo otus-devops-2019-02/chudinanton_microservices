@@ -20,3 +20,7 @@ jdauphant.nginx
 .molecule
 .cache
 .pytest_cache
+
+#kub keys
+*.csr
+*.pem

@@ -1,5 +1,51 @@
 # chudinanton_microservices
 chudinanton microservices repository
+## ДЗ№20
+## В процессе сделано:
+- Основное задание.
+
+kubectl get componentstatuses
+<pre>
+NAME                 STATUS    MESSAGE             ERROR
+scheduler            Healthy   ok                  
+controller-manager   Healthy   ok                  
+etcd-0               Healthy   {"health":"true"}   
+etcd-1               Healthy   {"health":"true"}   
+etcd-2               Healthy   {"health":"true"}  
+</pre>
+kubectl get nodes
+<pre>
+NAME       STATUS   ROLES    AGE     VERSION
+worker-0   Ready    <none>   2m30s   v1.12.0
+worker-1   Ready    <none>   2m28s   v1.12.0
+worker-2   Ready    <none>   2m26s   v1.12.0
+</pre>
+gcloud compute routes list --filter "network: kubernetes-the-hard-way"
+<pre>
+NAME                            NETWORK                  DEST_RANGE     NEXT_HOP                  PRIORITY
+default-route-755c5853d829ed5f  kubernetes-the-hard-way  10.240.0.0/24  kubernetes-the-hard-way   1000
+default-route-cbcabdec387b9ee4  kubernetes-the-hard-way  0.0.0.0/0      default-internet-gateway  1000
+kubernetes-route-10-200-0-0-24  kubernetes-the-hard-way  10.200.0.0/24  10.240.0.20               1000
+kubernetes-route-10-200-1-0-24  kubernetes-the-hard-way  10.200.1.0/24  10.240.0.21               1000
+kubernetes-route-10-200-2-0-24  kubernetes-the-hard-way  10.200.2.0/24  10.240.0.22               1000
+</pre>
+~/chudinanton_microservices/kubernetes# kubectl apply -f reddit
+<pre>
+deployment.apps/comment-deployment created
+deployment.apps/mongo-deployment created
+deployment.apps/post-deployment created
+deployment.apps/ui-deployment created
+</pre>
+~/chudinanton_microservices/kubernetes# kubectl get pods
+<pre>
+NAME                                  READY   STATUS    RESTARTS   AGE
+busybox-bd8fb7cbd-dgclc               1/1     Running   0          9m57s
+comment-deployment-598ffc46f8-f6ltj   1/1     Running   0          62s
+mongo-deployment-6895dffdf4-nxvnf     1/1     Running   0          61s
+post-deployment-789df69956-z6fkm      1/1     Running   0          61s
+ui-deployment-f7fb7d64-rnkd8          1/1     Running   0          61s
+</pre>
+
 ## ДЗ№19
 ## В процессе сделано:
 - Основное задание.
